@@ -135,7 +135,6 @@
           swiperEl.appendChild(cloneFirst);
           this.totalWidth = swiperEl.offsetWidth;
           this.swiperStyle = swiperEl.style;
-
         }
 
         // 4.让swiper元素, 显示第一个(目前是显示前面添加的最后一个元素)
