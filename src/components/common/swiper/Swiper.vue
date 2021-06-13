@@ -162,9 +162,10 @@
         this.distance = this.currentX - this.startX;
         let currentPosition = -this.currentIndex * this.totalWidth;
         let moveDistance = this.distance + currentPosition;
-        console.log('current', currentPosition);
-        console.log('distance', this.distance);
-        console.log(moveDistance);
+        //
+        // console.log('current', currentPosition);
+        // console.log('distance', this.distance);
+        // console.log(moveDistance);
 
 
         // 2.设置当前的位置

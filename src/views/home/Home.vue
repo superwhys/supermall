@@ -1,14 +1,23 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <home-swiper :banners="banners"/>
-    <recommend-view :recommends="recommends"></recommend-view>
-    <feature-view/>
-    <tab-control class="tab-control"
-                 :titles="['流行', '新款', '精选']"
-                 @tabClick="tabClick"/>
-    <goods-list :goods="showGoods"/>
 
+    <scroll class="content" ref="scroll"
+            :probe-type="3"
+            @scroll="contentScroll"
+            :pull-up-load='true'
+            @pullingUp="loadmore">
+      <home-swiper :banners="banners"/>
+      <recommend-view :recommends="recommends"></recommend-view>
+      <feature-view/>
+
+      <tab-control class="tab-control"
+                   :titles="['流行', '新款', '精选']"
+                   @tabClick="tabClick"/>
+      <goods-list :goods="showGoods"/>
+    </scroll>
+    <!-- 监听组件的点击要添加native -->
+    <back-top class="back-top" @click.native="btClick" v-show="btShow"></back-top>
   </div>
 </template>
 
@@ -16,12 +25,13 @@
 
 import NavBar from "components/common/navbar/NavBar";
 import HomeSwiper from "./childComps/HomeSwiper";
-// import HomeSwiper from "./childComps/HomeSwiper1";
 import RecommendView from "./childComps/RecommendView";
 import FeatureView from "./childComps/FeatureView";
 
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
+import Scroll from "components/common/scroll/Scroll";
+import BackTop from "components/content/backtop/BackTop";
 
 import {getHomeMultidata, getHomeGood} from "network/home";
 
@@ -34,7 +44,9 @@ export default {
     RecommendView,
     FeatureView,
     TabControl,
-    GoodsList
+    GoodsList,
+    Scroll,
+    BackTop
   },
   computed: {
     showGoods() {
@@ -50,7 +62,8 @@ export default {
         'new': {page: 0, list: []},
         'sell': {page: 0, list: []}
       },
-      currentType: 'pop'
+      currentType: 'pop',
+      btShow: false
     }
   },
   // 组件创建完之后，立刻发送请求
@@ -64,7 +77,7 @@ export default {
   },
   methods: {
     /**
-     *时间监听相关方法
+     *事件监听相关方法
      */
     tabClick(index){
       switch (index) {
@@ -78,6 +91,26 @@ export default {
           this.currentType = 'sell'
           break
       }
+    },
+    btClick() {
+      // 子传父，拿到子组件中的scroll对象
+      // scrillTo(x, y, time(ms)) 在time时间内回到（x, y）
+      this.$refs.scroll.scrollTo(0, 0)
+    },
+    contentScroll(position){
+      this.btShow = position.y < -1000
+    },
+    loadmore() {
+      console.log('上拉加载');
+
+
+      new Promise((resolve, reject) => {
+        this.getHomeGood(this.currentType)
+        resolve()
+      }).then(() => {
+        this.$refs.scroll.finishPullUp()
+
+      })
     },
     /**
      * 网络请求相关
@@ -93,6 +126,8 @@ export default {
       getHomeGood(type, page).then(res => {
         this.goods[type].page = page
         this.goods[type].list.push(...res.data.list)
+
+        // this.$refs.scroll.finishPullUp()
       })
     }
   }
@@ -102,6 +137,9 @@ export default {
 <style scoped>
   #home{
     padding-top: 44px;
+    /*vh 视口高度*/
+    height: 100vh;
+    position: relative;
   }
 
   .home-nav{
@@ -119,5 +157,19 @@ export default {
     top: 44px;
     z-index: 9;
   }
+
+  .content{
+    overflow: hidden;
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+  }
+
+  /*.content{*/
+  /*  height: calc(100% - 44px - 49px);*/
+  /*  margin-top: 44px;*/
+  /*  overflow: hidden;*/
+  /*}*/
+
 
 </style>
