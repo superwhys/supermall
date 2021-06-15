@@ -5,8 +5,7 @@
     <scroll class="content" ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
-            :pull-up-load='true'
-            @pullingUp="loadmore">
+            :pull-up-load='true'>
       <home-swiper :banners="banners"/>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view/>
@@ -74,6 +73,11 @@ export default {
     this.getHomeGood('new')
     this.getHomeGood('sell')
 
+    // 监听item中图片加载完成
+    this.$bus.$on('itemImageLoad', () => {
+      this.$refs.scroll.refresh()
+    })
+
   },
   methods: {
     /**
@@ -100,18 +104,7 @@ export default {
     contentScroll(position){
       this.btShow = position.y < -1000
     },
-    loadmore() {
-      console.log('上拉加载');
 
-
-      new Promise((resolve, reject) => {
-        this.getHomeGood(this.currentType)
-        resolve()
-      }).then(() => {
-        this.$refs.scroll.finishPullUp()
-
-      })
-    },
     /**
      * 网络请求相关
      */
@@ -127,7 +120,6 @@ export default {
         this.goods[type].page = page
         this.goods[type].list.push(...res.data.list)
 
-        // this.$refs.scroll.finishPullUp()
       })
     }
   }

@@ -16,10 +16,6 @@ export default {
       type: Number,
       default: 0
     },
-    pullUpLoad: {
-      type: Boolean,
-      default: false
-    }
   },
   data() {
     return {
@@ -37,19 +33,8 @@ export default {
     if(this.probeType !== 1 && this.probeType !== 0){
       // 监听滚动位置
       this.listenPosition(this.scroll)
-      // this.scroll.on('scroll', (position) => {
-      //   console.log(position);
-      //   this.$emit('scroll', position)
-      // })
+
     }
-
-    if(this.pullUpLoad){
-      this.scroll.on('pullingUp', () => {
-        this.$emit('pullingUp')
-
-      })
-    }
-
   },
   methods: {
     scrollTo(x, y, time=400) {
@@ -60,9 +45,11 @@ export default {
         this.$emit('scroll', position)
       })
     },
+    refresh(){
+      this.scroll.refresh()
+    },
     finishPullUp() {
       this.scroll.finishPullUp()
-      this.scroll.refresh()
     }
   }
 }
