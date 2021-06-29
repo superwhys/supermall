@@ -16,6 +16,10 @@ export default {
       type: Number,
       default: 0
     },
+    pullUpLoad: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -33,7 +37,14 @@ export default {
     if(this.probeType !== 1 && this.probeType !== 0){
       // 监听滚动位置
       this.listenPosition(this.scroll)
+    }
 
+    // 监听scroll滚动到底部
+    if(this.pullUpLoad) {
+      this.scroll.on('pullingUp', () => {
+        this.$emit('pullingUp')
+
+      })
     }
   },
   methods: {
