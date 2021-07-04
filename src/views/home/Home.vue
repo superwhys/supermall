@@ -68,6 +68,7 @@ export default {
       btShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
+      saveY: 0
     }
   },
   // 组件创建完之后，立刻发送请求
@@ -92,6 +93,14 @@ export default {
       refresh()
 
     })
+  },
+  activated() {
+    this.$refs.scroll.refresh()
+    this.$refs.scroll.scrollTo(0, this.saveY, 0.2)
+    // this.$refs.scroll.refresh()
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.scroll.y
   },
   methods: {
     /**

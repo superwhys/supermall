@@ -33,6 +33,7 @@ export default {
   },
   methods: {
     itemClick() {
+      console.log(this.$route.matched);
       if(this.$route.matched[0].path != this.path) {
         this.$router.replace(this.path)
       }
